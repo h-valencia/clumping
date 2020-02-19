@@ -236,7 +236,39 @@ sim %>%
   nrow()/10000
 ```
 
+```{r}
+N <- 1000 
+true_ability <- rnorm(N, 75, 10)
+noise1 <- rnorm(N, 0, 10)
+noise2 <- rnorm(N, 0, 10)
+midterm <- true_ability + noise1
+final <- true_ability + noise2
+exams <- data.frame(midterm, final)
+```
 
+```{r}
+exams <- exams %>%
+  mutate(treatment = NA)
+
+for(s in 1:nrow(exams)){
+  exams$treatment[s] <- rbinom(1, 1, 0.5)
+}
+```
+
+```{r}
+exams <- exams %>%
+  mutate(causal_effect = final-midterm)
+
+treated <- exams %>%
+  filter(treatment == 1) %>%
+  summarize(mean(causal_effect))
+
+untreated <- exams %>%
+  filter(treatment == 0) %>%
+  summarize(mean(causal_effect))
+
+treated - untreated
+```
 
 
 
